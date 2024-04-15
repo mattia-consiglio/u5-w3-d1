@@ -1,8 +1,12 @@
 package mattiaconsiglio.u5w3d1.security;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SecurityException;
 import mattiaconsiglio.u5w3d1.entities.Employee;
+import mattiaconsiglio.u5w3d1.exceptions.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -22,5 +26,13 @@ public class JWTTools {
                 .subject(employee.getId().toString())
                 .signWith(Keys.hmacShaKeyFor(secret.getBytes()))
                 .compact();
+    }
+
+    public void validateToken(String token) {
+        try {
+            Jwts.parser().verifyWith(Keys.hmacShaKeyFor(secret.getBytes())).build().parse(token);
+        } catch (ExpiredJwtException | MalformedJwtException | SecurityException | IllegalArgumentException e) {
+            throw new UnauthorizedException("Invalid token");
+        }
     }
 }

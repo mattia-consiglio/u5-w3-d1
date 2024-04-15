@@ -2,7 +2,8 @@ package mattiaconsiglio.u5w3d1.services;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
-import mattiaconsiglio.u5w3d1.dtos.EmployeeDTO;
+import mattiaconsiglio.u5w3d1.dtos.EmployeePasswordDTO;
+import mattiaconsiglio.u5w3d1.dtos.EmployeeRequestDTO;
 import mattiaconsiglio.u5w3d1.entities.Employee;
 import mattiaconsiglio.u5w3d1.exceptions.BadRequestException;
 import mattiaconsiglio.u5w3d1.exceptions.RecordNotFoundException;
@@ -24,16 +25,16 @@ public class EmployeeService {
     @Autowired
     private Cloudinary cloudinary;
 
-    public Employee createEmployee(EmployeeDTO employeeDTO) {
-        if (employeeRepository.existsByUsernameAndEmail(employeeDTO.username(), employeeDTO.email())) {
+    public Employee createEmployee(EmployeeRequestDTO employeeRequestDTO) {
+        if (employeeRepository.existsByUsernameAndEmail(employeeRequestDTO.username(), employeeRequestDTO.email())) {
             throw new BadRequestException("Username and email already in use");
-        } else if (employeeRepository.existsByUsername(employeeDTO.username())) {
+        } else if (employeeRepository.existsByUsername(employeeRequestDTO.username())) {
             throw new BadRequestException("Username already in use");
-        } else if (employeeRepository.existsByEmail(employeeDTO.email())) {
+        } else if (employeeRepository.existsByEmail(employeeRequestDTO.email())) {
             throw new BadRequestException("Email already in use");
         }
-        String photoUrl = "https://ui-avatars.com/api/?name=" + employeeDTO.firstName().charAt(0) + "+" + employeeDTO.lastName().charAt(0);
-        return employeeRepository.save(new Employee(employeeDTO.username(), employeeDTO.firstName(), employeeDTO.lastName(), employeeDTO.email(), photoUrl));
+        String photoUrl = "https://ui-avatars.com/api/?name=" + employeeRequestDTO.firstName().charAt(0) + "+" + employeeRequestDTO.lastName().charAt(0);
+        return employeeRepository.save(new Employee(employeeRequestDTO.username(), employeeRequestDTO.firstName(), employeeRequestDTO.lastName(), employeeRequestDTO.email(), photoUrl));
     }
 
 
@@ -47,23 +48,23 @@ public class EmployeeService {
     }
 
 
-    public Employee updateEmployee(UUID id, EmployeeDTO employeeDTO) {
+    public Employee updateEmployee(UUID id, EmployeeRequestDTO employeeRequestDTO) {
         Employee employee = this.getEmployee(id);
-        if (employeeRepository.existsByUsernameAndEmail(employeeDTO.username(), employeeDTO.email()) && !employee.getUsername().equals(employeeDTO.username()) && !employee.getEmail().equals(employeeDTO.email())) {
+        if (employeeRepository.existsByUsernameAndEmail(employeeRequestDTO.username(), employeeRequestDTO.email()) && !employee.getUsername().equals(employeeRequestDTO.username()) && !employee.getEmail().equals(employeeRequestDTO.email())) {
             throw new BadRequestException("Username and email already in use");
-        } else if (employeeRepository.existsByUsername(employeeDTO.username()) && !employee.getUsername().equals(employeeDTO.username())) {
+        } else if (employeeRepository.existsByUsername(employeeRequestDTO.username()) && !employee.getUsername().equals(employeeRequestDTO.username())) {
             throw new BadRequestException("Username already in use");
-        } else if (employeeRepository.existsByEmail(employeeDTO.email()) && !employee.getEmail().equals(employeeDTO.email())) {
+        } else if (employeeRepository.existsByEmail(employeeRequestDTO.email()) && !employee.getEmail().equals(employeeRequestDTO.email())) {
             throw new BadRequestException("Email already in use");
         }
-        String photoUrl = "https://ui-avatars.com/api/?name=" + employeeDTO.firstName().charAt(0) + "+" + employeeDTO.lastName().charAt(0);
+        String photoUrl = "https://ui-avatars.com/api/?name=" + employeeRequestDTO.firstName().charAt(0) + "+" + employeeRequestDTO.lastName().charAt(0);
         if (!employee.getPhotoUrl().startsWith("https://ui-avatars.com/api/")) {
             photoUrl = employee.getPhotoUrl();
         }
-        employee.setUsername(employeeDTO.username());
-        employee.setFirstName(employeeDTO.firstName());
-        employee.setLastName(employeeDTO.lastName());
-        employee.setEmail(employeeDTO.email());
+        employee.setUsername(employeeRequestDTO.username());
+        employee.setFirstName(employeeRequestDTO.firstName());
+        employee.setLastName(employeeRequestDTO.lastName());
+        employee.setEmail(employeeRequestDTO.email());
         employee.setPhotoUrl(photoUrl);
         return employeeRepository.save(employee);
     }
@@ -83,5 +84,11 @@ public class EmployeeService {
 
     public Employee getEmployeeByUsernameOrEmail(String usernameOrEmail) {
         return employeeRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail).orElseThrow(() -> new RecordNotFoundException("Employee with usernameOrEmail/email " + usernameOrEmail + " not found"));
+    }
+
+    public Employee updateEmployeePassword(UUID id, EmployeePasswordDTO employeeDTO) {
+        Employee employee = this.getEmployee(id);
+        employee.setPassword(employeeDTO.password());
+        return employeeRepository.save(employee);
     }
 }

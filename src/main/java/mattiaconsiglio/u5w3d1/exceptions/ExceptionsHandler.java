@@ -33,6 +33,12 @@ public class ExceptionsHandler {
         return new ErrorDTO(e.getMessage(), LocalDateTime.now());
     }
 
+    @ExceptionHandler(UnauthorizedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED) //401
+    public ErrorDTO handleUnauthorizedException(UnauthorizedException e) {
+        return new ErrorDTO(e.getMessage(), LocalDateTime.now());
+    }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorDTO handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {

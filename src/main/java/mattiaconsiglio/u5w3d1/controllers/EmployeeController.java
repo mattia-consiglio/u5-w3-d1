@@ -1,6 +1,7 @@
 package mattiaconsiglio.u5w3d1.controllers;
 
-import mattiaconsiglio.u5w3d1.dtos.EmployeeDTO;
+import mattiaconsiglio.u5w3d1.dtos.EmployeePasswordDTO;
+import mattiaconsiglio.u5w3d1.dtos.EmployeeRequestDTO;
 import mattiaconsiglio.u5w3d1.entities.Employee;
 import mattiaconsiglio.u5w3d1.exceptions.BadRequestException;
 import mattiaconsiglio.u5w3d1.services.EmployeeService;
@@ -24,14 +25,6 @@ public class EmployeeController {
     @Autowired
     private EmployeeService employeeService;
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public Employee createEmployee(@RequestBody @Validated EmployeeDTO employeeDTO, BindingResult validation) {
-        if (validation.hasErrors()) {
-            throw new BadRequestException("Invalid data", validation.getAllErrors());
-        }
-        return employeeService.createEmployee(employeeDTO);
-    }
 
     @GetMapping
     public Page<Employee> getEmployees(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "usernameOrEmail") String sort) {
@@ -46,11 +39,11 @@ public class EmployeeController {
 
 
     @PutMapping("{id}")
-    public Employee updateEmployee(@PathVariable UUID id, @RequestBody @Validated EmployeeDTO employeeDTO, BindingResult validation) {
+    public Employee updateEmployee(@PathVariable UUID id, @RequestBody @Validated EmployeeRequestDTO employeeRequestDTO, BindingResult validation) {
         if (validation.hasErrors()) {
             throw new BadRequestException("Invalid data", validation.getAllErrors());
         }
-        return employeeService.updateEmployee(id, employeeDTO);
+        return employeeService.updateEmployee(id, employeeRequestDTO);
     }
 
     @DeleteMapping("{id}")
@@ -63,6 +56,14 @@ public class EmployeeController {
     @PutMapping("{id}/photo")
     public Employee updateEmployeePhoto(@PathVariable UUID id, @RequestParam("photo") MultipartFile photo) throws IOException {
         return employeeService.updateEmployeePhoto(id, photo);
+    }
+
+    @PutMapping("{id}/password")
+    public Employee updateEmployeePassword(@PathVariable UUID id, @RequestBody @Validated EmployeePasswordDTO employeeDTO, BindingResult validation) {
+        if (validation.hasErrors()) {
+            throw new BadRequestException("Invalid data", validation.getAllErrors());
+        }
+        return employeeService.updateEmployeePassword(id, employeeDTO);
     }
 
 }
