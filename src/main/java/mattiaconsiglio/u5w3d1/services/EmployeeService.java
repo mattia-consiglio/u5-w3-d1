@@ -11,6 +11,7 @@ import mattiaconsiglio.u5w3d1.repositories.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,6 +26,9 @@ public class EmployeeService {
     @Autowired
     private Cloudinary cloudinary;
 
+    @Autowired
+    private PasswordEncoder bCrypt;
+
     public Employee createEmployee(EmployeeRequestDTO employeeRequestDTO) {
         if (employeeRepository.existsByUsernameAndEmail(employeeRequestDTO.username(), employeeRequestDTO.email())) {
             throw new BadRequestException("Username and email already in use");
@@ -34,7 +38,7 @@ public class EmployeeService {
             throw new BadRequestException("Email already in use");
         }
         String photoUrl = "https://ui-avatars.com/api/?name=" + employeeRequestDTO.firstName().charAt(0) + "+" + employeeRequestDTO.lastName().charAt(0);
-        return employeeRepository.save(new Employee(employeeRequestDTO.username(), employeeRequestDTO.firstName(), employeeRequestDTO.lastName(), employeeRequestDTO.email(), photoUrl));
+        return employeeRepository.save(new Employee(employeeRequestDTO.username(), employeeRequestDTO.firstName(), employeeRequestDTO.lastName(), employeeRequestDTO.email(), photoUrl, bCrypt.encode(employeeRequestDTO.password())));
     }
 
 

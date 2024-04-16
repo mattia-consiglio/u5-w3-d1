@@ -79,4 +79,8 @@ public class DeviceService {
         device.setEmployee(employee);
         return deviceRepository.save(device);
     }
+
+    public Page<Device> getDevicesByEmployee(Employee employee, Pageable pageable) {
+        return deviceRepository.findAllByEmployee(employee, pageable);
+    }
 }

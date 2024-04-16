@@ -35,4 +35,9 @@ public class JWTTools {
             throw new UnauthorizedException("Invalid token");
         }
     }
+
+    public String getSubjectFromToken(String token) {
+        return Jwts.parser().verifyWith(Keys.hmacShaKeyFor(secret.getBytes())).build().parseSignedClaims(token).getPayload().getSubject();
+    }
+
 }

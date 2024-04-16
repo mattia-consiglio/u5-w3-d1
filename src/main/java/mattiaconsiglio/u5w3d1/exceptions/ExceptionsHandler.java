@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import mattiaconsiglio.u5w3d1.dtos.ErrorDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -36,6 +37,12 @@ public class ExceptionsHandler {
     @ExceptionHandler(UnauthorizedException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED) //401
     public ErrorDTO handleUnauthorizedException(UnauthorizedException e) {
+        return new ErrorDTO(e.getMessage(), LocalDateTime.now());
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorDTO handleAccessDeniedException(AccessDeniedException e) {
         return new ErrorDTO(e.getMessage(), LocalDateTime.now());
     }
 

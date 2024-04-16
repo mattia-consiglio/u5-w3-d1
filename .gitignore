@@ -34,3 +34,4 @@ build/
 
 env.properties
 u5-w2-d5.log
+u5-w2-d5.log.*.gz

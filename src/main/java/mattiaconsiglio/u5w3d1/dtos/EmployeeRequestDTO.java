@@ -16,6 +16,9 @@ public record EmployeeRequestDTO(
         String lastName,
         @NotBlank(message = "Email is (email) required")
         @Email(message = "Email (email) must be a valid email address")
-        String email
+        String email,
+        @NotBlank
+        @Size(min = 8, message = "Password must be at least 11 characters long")
+        String password
 ) {
 }
