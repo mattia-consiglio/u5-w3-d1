@@ -52,6 +52,7 @@ public class DeviceController {
 
 
     @GetMapping("{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public Device getDevice(@PathVariable UUID id) {
         return deviceService.getDevice(id);
     }
